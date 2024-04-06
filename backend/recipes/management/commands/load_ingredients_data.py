@@ -1,7 +1,6 @@
 import csv
 
 from django.core.management.base import BaseCommand
-
 from foodgram.settings import CSV_FILES_DIR
 from recipes.models import Ingredient
 
@@ -23,3 +22,4 @@ class Command(BaseCommand):
                 for row in reader
             ]
             Ingredient.objects.bulk_create(ingredients)
+        self.stdout.write(self.style.SUCCESS('Загрузка выполнена успешно'))

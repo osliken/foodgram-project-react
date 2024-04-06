@@ -1,11 +1,7 @@
 from colorfield.fields import ColorField
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator
-)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from django.db import models
-
 from foodgram.settings import LENGTH_TEXT
 from users.models import User
 
@@ -94,7 +90,7 @@ class Recipe(models.Model):
         validators=[
             MinValueValidator(
                 1,
-                message='Время приготовления не может быть меньше минуты'
+                'Время приготовления не может быть меньше минуты'
             )
         ]
     )
@@ -156,11 +152,11 @@ class IngredientRecipe(models.Model):
         validators=[
             MinValueValidator(
                 1,
-                message='Количество ингредиента не может быть меньше одного'
+                'Количество ингредиента не может быть меньше одного'
             ),
             MaxValueValidator(
                 1000,
-                message='Количество ингредиента не может быть больше тысячи'
+                'Количество ингредиента не может быть больше тысячи'
             )
         ]
     )

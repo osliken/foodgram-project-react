@@ -1,15 +1,8 @@
 from django.contrib import admin
-
 from foodgram.settings import LIST_PER_PAGE
 
-from .models import (
-    Favorite,
-    Ingredient,
-    IngredientRecipe,
-    Recipe,
-    ShoppingCart,
-    Tag
-)
+from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingCart, Tag)
 
 
 @admin.register(Tag)

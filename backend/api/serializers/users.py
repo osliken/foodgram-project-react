@@ -1,8 +1,8 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from foodgram.settings import RECIPES_LIMIT
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from foodgram.settings import RECIPES_LIMIT
 from recipes.models import Recipe
 from users.models import Subscribe, User
 

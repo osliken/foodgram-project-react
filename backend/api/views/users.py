@@ -8,11 +8,8 @@ from users.models import Subscribe, User
 
 from ..pagination import PageLimitPagination
 from ..permissions import AnonimOrAuthenticatedReadOnly
-from ..serializers.users import (
-    CustomUserSerializer,
-    SubscribeSerializer,
-    SubscribeShowSerializer
-)
+from ..serializers.users import (CustomUserSerializer, SubscribeSerializer,
+                                 SubscribeShowSerializer)
 
 
 class CustomUserViewSet(UserViewSet):

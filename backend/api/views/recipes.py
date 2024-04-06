@@ -6,27 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    IngredientRecipe,
-    Recipe,
-    ShoppingCart,
-    Tag
-)
+from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
 
 from ..filters import IngredientSearchFilter, RecipeFilter
 from ..permissions import AuthorOrReadOnly
-from ..serializers.recipes import (
-    FavoriteSerializer,
-    IngredientSerializer,
-    RecipeGETSerializer,
-    RecipeSerializer,
-    RecipeShortSerializer,
-    ShoppingCartSerializer,
-    TagSerializer
-)
+from ..serializers.recipes import (FavoriteSerializer, IngredientSerializer,
+                                   RecipeGETSerializer, RecipeSerializer,
+                                   RecipeShortSerializer,
+                                   ShoppingCartSerializer, TagSerializer)
 from ..utils import create_shopping_cart
 
 
@@ -87,7 +74,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(
             favorite_serializer.data, status=status.HTTP_201_CREATED
         )
-    
+
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """Позволяет пользователю удалять рецепты из избранного."""

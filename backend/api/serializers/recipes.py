@@ -6,14 +6,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    IngredientRecipe,
-    Recipe,
-    ShoppingCart,
-    Tag
-)
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
 
 from .users import CustomUserSerializer
 
@@ -27,8 +21,9 @@ class Base64ImageField(serializers.ImageField):
             ext = img_format.split('/')[-1]
             if ext.lower() not in ('jpeg', 'jpg', 'png'):
                 raise serializers.ValidationError(
-                    'Формат изображения не поддерживается. \
-                    Используйте форматы JPEG или PNG.')
+                    'Формат изображения не поддерживается. '
+                    'Используйте форматы JPEG или PNG.'
+                )
             uid = uuid.uuid4()
             data = ContentFile(
                 base64.b64decode(img_str), name=uid.urn[9:] + '.' + ext
@@ -121,7 +116,7 @@ class RecipeGETSerializer(serializers.ModelSerializer):
             return False
         return request.user.shopping_cart.filter(recipe=object).exists()
 
-    
+
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор модели Recipe для небезопасных запросов."""
 
@@ -143,6 +138,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        """Проверка на наличие полей."""
         if not data.get('ingredients'):
             raise serializers.ValidationError(
                 'Нужно указать минимум 1 ингредиент.'
