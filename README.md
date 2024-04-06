@@ -59,7 +59,9 @@
     docker-compose up
     ```
 
-## Документация к API доступна по адресу <http://localhost/api/docs/>
+## Документация к API доступна по адресу:
+
+[http://localhost/api/docs/](http://localhost/api/docs/)
 
 
 ## Как развернуть проект на удалённом сервере:
