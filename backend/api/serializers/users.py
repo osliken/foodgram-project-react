@@ -1,5 +1,5 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from foodgram.settings import RECIPES_LIMIT
+from recipes.constants import RECIPES_LIMIT
 from recipes.models import Recipe
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -67,7 +67,7 @@ class CustomUserSerializer(UserSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return object.author.filter(subscriber=request.user).exists()
+        return object.authors.filter(subscriber=request.user).exists()
 
 
 class SubscribeSerializer(serializers.ModelSerializer):

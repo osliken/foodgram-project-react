@@ -80,18 +80,6 @@
     sudo docker compose -f docker-compose.production.yml exec backend mkdir -p /backend_static/static/
     sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /static/static/
     ```
-- Доступ в админку:
-
-    ```bash
-    osliken@yandex.ru
-    food3578gram
-    ```
-- Пользователь:
-
-    ```bash
-    ya@ya.ru
-    food3478gram
-    ```
 
 ## Автор
 

@@ -1,11 +1,12 @@
 from django.contrib import admin
-from foodgram.settings import LIST_PER_PAGE
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from recipes.constants import LIST_PER_PAGE
 
 from .models import Subscribe, User
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(BaseUserAdmin):
     """Раздел пользователей."""
 
     list_display = (
@@ -15,13 +16,23 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'password',
-        'is_admin'
+        'count_recipes',
+        'count_subscribers'
     )
     empty_value_display = 'значение отсутствует'
-    list_editable = ('is_admin',)
     list_filter = ('username', 'email')
     list_per_page = LIST_PER_PAGE
     search_fields = ('username',)
+
+    @admin.display(description='Количество рецептов')
+    def count_recipes(self, object):
+        """Вычисляет количество рецептов у автора."""
+        return object.recipes.count()
+
+    @admin.display(description='Количество подписчиков')
+    def count_subscribers(self, object):
+        """Вычисляет количество подписчиков у автора."""
+        return object.authors.count()
 
 
 @admin.register(Subscribe)
@@ -37,7 +48,7 @@ class SubscribeAdmin(admin.ModelAdmin):
     list_editable = ('author', 'subscriber')
     list_filter = ('author',)
     list_per_page = LIST_PER_PAGE
-    search_fields = ('author',)
+    search_fields = ('author__username',)
 
 
 admin.site.site_title = 'Администрирование Foodgram'

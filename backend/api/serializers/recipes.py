@@ -81,7 +81,7 @@ class RecipeGETSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientFullSerializer(
-        many=True, source='ingredient_recipe'
+        many=True, source='ingredient_recipes'
     )
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
@@ -106,14 +106,14 @@ class RecipeGETSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return request.user.favoriting.filter(recipe=object).exists()
+        return request.user.favoritings.filter(recipe=object).exists()
 
     def get_is_in_shopping_cart(self, object):
         """Проверка добавления рецепта в список покупок."""
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return request.user.shopping_cart.filter(recipe=object).exists()
+        return request.user.shopping_carts.filter(recipe=object).exists()
 
 
 class RecipeSerializer(serializers.ModelSerializer):

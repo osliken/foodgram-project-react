@@ -78,7 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def delete_favorite(self, request, pk):
         """Позволяет пользователю удалять рецепты из избранного."""
         recipe = get_object_or_404(Recipe, pk=pk)
-        favorite_recipe = request.user.favoriting.filter(recipe=recipe)
+        favorite_recipe = request.user.favoritings.filter(recipe=recipe)
         if not favorite_recipe.exists():
             return Response(
                 'Рецепт не найден', status=status.HTTP_400_BAD_REQUEST
@@ -117,7 +117,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Позволяет пользователю удалять рецепты
         из списка покупок."""
         recipe = get_object_or_404(Recipe, pk=pk)
-        shopping_cart_recipe = request.user.shopping_cart.filter(
+        shopping_cart_recipe = request.user.shopping_carts.filter(
             recipe=recipe
         )
         if not shopping_cart_recipe.exists():
@@ -138,7 +138,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Позволяет текущему пользователю загрузить список покупок."""
         ingredients_cart = (
             IngredientRecipe.objects.filter(
-                recipe__shopping_cart__user=request.user
+                recipe__shopping_carts__user=request.user
             ).values(
                 'ingredient__name',
                 'ingredient__measurement_unit',

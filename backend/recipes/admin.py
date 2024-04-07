@@ -1,5 +1,5 @@
 from django.contrib import admin
-from foodgram.settings import LIST_PER_PAGE
+from recipes.constants import LIST_PER_PAGE
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Tag)
@@ -68,27 +68,24 @@ class RecipeAdmin(admin.ModelAdmin):
     list_editable = ('author',)
     list_filter = ('author', 'name', 'tags')
     list_per_page = LIST_PER_PAGE
-    search_fields = ('author', 'name')
+    search_fields = ('author__username', 'name')
 
+    @admin.display(description='ингредиенты')
     def get_ingredients(self, object):
         """Получает ингредиент или список ингредиентов рецепта."""
         return '\n'.join(
             (ingredient.name for ingredient in object.ingredients.all())
         )
 
-    get_ingredients.short_description = 'ингредиенты'
-
+    @admin.display(description='теги')
     def get_tags(self, object):
         """Получает тег или список тегов рецепта."""
         return '\n'.join((tag.name for tag in object.tags.all()))
 
-    get_tags.short_description = 'теги'
-
+    @admin.display(description='Количество добавлений в избранное')
     def count_favorite(self, object):
         """Вычисляет количество добавлений рецепта в избранное."""
-        return object.favoriting.count()
-
-    count_favorite.short_description = 'Количество добавлений в избранное'
+        return object.favoritings.count()
 
 
 @admin.register(IngredientRecipe)
@@ -118,7 +115,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     empty_value_display = 'значение отсутствует'
     list_editable = ('user', 'recipe')
     list_filter = ('user',)
-    search_fields = ('user',)
+    search_fields = ('user__username',)
     list_per_page = LIST_PER_PAGE
 
 
@@ -135,5 +132,5 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     empty_value_display = 'значение отсутствует'
     list_editable = ('user', 'recipe')
     list_filter = ('user',)
-    search_fields = ('user',)
+    search_fields = ('user__username',)
     list_per_page = LIST_PER_PAGE

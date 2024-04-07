@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
-from foodgram.settings import LENGTH_TEXT
+from recipes.constants import LENGTH_TEXT
 
 
 class User(AbstractUser):
@@ -27,11 +26,7 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         help_text='Введите имя пользователя',
-        db_index=True,
-        validators=[RegexValidator(
-            regex=r'^[\w.@+-]+$',
-            message='Имя пользователя содержит недопустимый символ'
-        )]
+        db_index=True
     )
     first_name = models.CharField(
         'Имя',
@@ -48,15 +43,16 @@ class User(AbstractUser):
         max_length=150,
         help_text='Введите пароль'
     )
-    is_admin = models.BooleanField(
-        'Администратор',
-        default=False
-    )
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ('id',)
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(username='me'),
+                name='username_is_not_me'
+            )
+        ]
 
     def __str__(self):
         return self.username[:LENGTH_TEXT]
@@ -69,14 +65,14 @@ class Subscribe(models.Model):
         User,
         verbose_name='Подписчик',
         on_delete=models.CASCADE,
-        related_name='subscriber',
+        related_name='subscribers',
         help_text='Выберите подписчика'
     )
     author = models.ForeignKey(
         User,
         verbose_name='Автор',
         on_delete=models.CASCADE,
-        related_name='author',
+        related_name='authors',
         help_text='Выберите автора'
     )
 

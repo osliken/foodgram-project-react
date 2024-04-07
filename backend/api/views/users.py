@@ -88,7 +88,7 @@ class CustomUserViewSet(UserViewSet):
     )
     def get_subscriptions(self, request):
         """Возвращает авторов, на которых подписан пользователь."""
-        authors = User.objects.filter(author__subscriber=request.user)
+        authors = User.objects.filter(authors__subscriber=request.user)
         paginator = PageLimitPagination()
         result_pages = paginator.paginate_queryset(
             queryset=authors, request=request
