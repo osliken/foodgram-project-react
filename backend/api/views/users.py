@@ -7,7 +7,7 @@ from users.models import Subscribe, User
 
 from ..pagination import PageLimitPagination
 from ..permissions import AnonimOrAuthenticatedReadOnly
-from ..serializers.users import (CustomUserSerializer, SubscribeSerializer,
+from ..serializers.users import (UserGETSerializer, SubscribeSerializer,
                                  SubscribeShowSerializer)
 
 
@@ -15,7 +15,7 @@ class CustomUserViewSet(UserViewSet):
     """Вьюсет модели User."""
 
     queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = UserGETSerializer
     permission_classes = (AnonimOrAuthenticatedReadOnly,)
     pagination_class = PageLimitPagination
 
@@ -30,14 +30,14 @@ class CustomUserViewSet(UserViewSet):
         """Позволяет пользователю получить подробную информацию о себе
         и редактировать её."""
         if request.method == 'PATCH':
-            serializer = CustomUserSerializer(
+            serializer = UserGETSerializer(
                 request.user, data=request.data,
                 partial=True, context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = CustomUserSerializer(
+        serializer = UserGETSerializer(
             request.user, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)

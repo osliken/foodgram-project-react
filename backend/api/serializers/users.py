@@ -1,12 +1,11 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.constants import RECIPES_LIMIT
-from recipes.models import Recipe
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
 from users.models import Subscribe, User
 
 
-class CustomUserCreateSerializer(UserCreateSerializer):
+class UserSerializer(UserCreateSerializer):
     """Сериализатор для создания объекта модели User."""
 
     class Meta:
@@ -39,7 +38,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         return data
 
 
-class CustomUserSerializer(UserSerializer):
+class UserGETSerializer(UserSerializer):
     """Сериализатор для модели User."""
 
     is_subscribed = serializers.SerializerMethodField(read_only=True)
@@ -65,9 +64,10 @@ class CustomUserSerializer(UserSerializer):
     def get_is_subscribed(self, object):
         """Проверка подписки пользователя на автора."""
         request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return object.authors.filter(subscriber=request.user).exists()
+        return (
+            request is None or not request.user.is_authenticated
+            or object.authors.filter(subscriber=request.user).exists()
+        )
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -75,7 +75,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscribe
-        fields = '__all__'
+        fields = ('author', 'subscriber')
         validators = [
             UniqueTogetherValidator(
                 queryset=Subscribe.objects.all(),
@@ -93,43 +93,25 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return data
 
 
-class SubscribeRecipeShortSerializer(serializers.ModelSerializer):
-    """Сериализатор для отображения рецептов в подписке."""
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'name',
-            'image',
-            'cooking_time'
-        )
-
-
-class SubscribeShowSerializer(CustomUserSerializer):
+class SubscribeShowSerializer(UserGETSerializer):
     """Сериализатор отображения подписок."""
 
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
-    class Meta:
+    class Meta(UserGETSerializer):
         model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipes',
-            'recipes_count'
-        )
+        fields = UserGETSerializer.Meta.fields + ('recipes', 'recipes_count')
 
     def get_recipes(self, object):
-        author_recipes = object.recipes.all()[:RECIPES_LIMIT]
-        return SubscribeRecipeShortSerializer(
-            author_recipes, many=True
-        ).data
+        from api.serializers.recipes import RecipeShortSerializer
+        request = self.context.get('request')
+        limit = request.query_params.get('recipes_limit')
+        recipes = object.recipes.all()
+        if limit:
+            recipes = recipes[:int(limit)]
+        serializer = RecipeShortSerializer(recipes, many=True)
+        return serializer.data
 
     def get_recipes_count(self, object):
         return object.recipes.count()
