@@ -1,12 +1,12 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+from rest_framework import serializers
 
+from api.serializers.users import UserGETSerializer
 from recipes.constants import MAX_INGREDIENT, MIN_INGREDIENT
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag)
-from serializers.users import UserGETSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):

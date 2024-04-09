@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from recipes.constants import LIST_PER_PAGE
-from recipes.models import Subscribe, User
+from users.models import Subscribe, User
 
 
 @admin.register(User)

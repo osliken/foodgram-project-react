@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from users.models import Subscribe, User
 
 
-class UserSerializer(UserCreateSerializer):
+class UserForCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания объекта модели User."""
 
     class Meta:
