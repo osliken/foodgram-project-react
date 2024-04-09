@@ -1,12 +1,11 @@
 from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
-
 from django.db import models
-from recipes.constants import (
-    LENGTH_TEXT, MAX_LENGTH, MAX_LENGTH_COLOR,
-    MIN_COOKING_TIME, MAX_COOKING_TIME, MIN_INGREDIENT, MAX_INGREDIENT
-)
 from users.models import User
+
+from recipes.constants import (LENGTH_TEXT, MAX_COOKING_TIME, MAX_INGREDIENT,
+                               MAX_LENGTH, MAX_LENGTH_COLOR, MIN_COOKING_TIME,
+                               MIN_INGREDIENT)
 
 
 class Tag(models.Model):

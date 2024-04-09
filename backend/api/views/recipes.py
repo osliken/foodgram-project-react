@@ -1,21 +1,21 @@
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (
-    Favorite, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
-)
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-from ..filters import IngredientSearchFilter, RecipeFilter
-from ..permissions import AuthorOrReadOnly
-from ..serializers.recipes import (FavoriteSerializer, IngredientSerializer,
-                                   RecipeGETSerializer, RecipeSerializer,
-                                   ShoppingCartSerializer, TagSerializer)
-from ..utils import create_shopping_cart
+from api.filters import IngredientSearchFilter, RecipeFilter
+from api.permissions import AuthorOrReadOnly
+from api.serializers.recipes import (FavoriteSerializer, IngredientSerializer,
+                                     RecipeGETSerializer, RecipeSerializer,
+                                     ShoppingCartSerializer, TagSerializer)
+from api.utils import create_shopping_cart
+from recipes.models import (
+    Favorite, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
+)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

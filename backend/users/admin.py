@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from recipes.constants import LIST_PER_PAGE
 
-from .models import Subscribe, User
+from recipes.constants import LIST_PER_PAGE
+from recipes.models import Subscribe, User
 
 
 @admin.register(User)
@@ -26,12 +26,10 @@ class UserAdmin(BaseUserAdmin):
 
     @admin.display(description='Количество рецептов')
     def count_recipes(self, object):
-        """Вычисляет количество рецептов у автора."""
         return object.recipes.count()
 
     @admin.display(description='Количество подписчиков')
     def count_subscribers(self, object):
-        """Вычисляет количество подписчиков у автора."""
         return object.authors.count()
 
 

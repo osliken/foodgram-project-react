@@ -1,8 +1,8 @@
 from django.contrib import admin
-from recipes.constants import LIST_PER_PAGE
 
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingCart, Tag)
+from recipes.constants import LIST_PER_PAGE
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
 
 
 @admin.register(Tag)
@@ -72,19 +72,16 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description='ингредиенты')
     def get_ingredients(self, object):
-        """Получает ингредиент или список ингредиентов рецепта."""
         return '\n'.join(
             (ingredient.name for ingredient in object.ingredients.all())
         )
 
     @admin.display(description='теги')
     def get_tags(self, object):
-        """Получает тег или список тегов рецепта."""
         return '\n'.join((tag.name for tag in object.tags.all()))
 
     @admin.display(description='Количество добавлений в избранное')
     def count_favorite(self, object):
-        """Вычисляет количество добавлений рецепта в избранное."""
         return object.favoritings.count()
 
 

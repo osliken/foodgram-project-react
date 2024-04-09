@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from recipes.constants import MAX_INGREDIENT, MIN_INGREDIENT
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag)
-from .users import UserGETSerializer
+from serializers.users import UserGETSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):

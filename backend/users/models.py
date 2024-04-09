@@ -79,7 +79,6 @@ class Subscribe(models.Model):
     class Meta:
         verbose_name = 'Подписка на автора'
         verbose_name_plural = 'Подписки на автора'
-        ordering = ('id',)
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'subscriber'],

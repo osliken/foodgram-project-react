@@ -1,17 +1,18 @@
 from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
+from djoser.views import UserViewSet as UserView
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from api.pagination import PageLimitPagination
+from api.permissions import AdminOrReadOnly
+from api.serializers.users import (SubscribeSerializer,
+                                   SubscribeShowSerializer,
+                                   UserGETSerializer)
 from users.models import Subscribe, User
 
-from ..pagination import PageLimitPagination
-from ..permissions import AdminOrReadOnly
-from ..serializers.users import (UserGETSerializer, SubscribeSerializer,
-                                 SubscribeShowSerializer)
 
-
-class CustomUserViewSet(UserViewSet):
+class UserViewSet(UserView):
     """Вьюсет модели User."""
 
     queryset = User.objects.all()
