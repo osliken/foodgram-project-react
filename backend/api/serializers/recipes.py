@@ -131,7 +131,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        """Проверка на наличие и уникальность полей."""
         if not data.get('ingredients'):
             raise serializers.ValidationError(
                 'Нужно указать минимум 1 ингредиент'
@@ -154,7 +153,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return data
 
     def validate_tags(self, tags):
-        """Проверка рецепта на уникальные теги."""
         if len(tags) != len(set(tags)):
             raise serializers.ValidationError(
                 'Теги рецепта должны быть уникальными'
@@ -196,7 +194,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, recipe):
-        """Определяет какой сериализатор будет использоваться для чтения."""
         serializer = RecipeGETSerializer(recipe)
         return serializer.data
 
@@ -215,7 +212,7 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Favorite."""
+    """Сериализатор для модели Favorite и ShoppingCart."""
 
     class Meta:
         model = Favorite
@@ -227,6 +224,18 @@ class FavoriteSerializer(serializers.ModelSerializer):
                 message='Вы уже добавляли это рецепт в избранное'
             )
         ]
+
+    def validate(self, data):
+        recipe = data.get('recipe')
+        if not Recipe.objects.filter(id=recipe.id).exists():
+            raise serializers.ValidationError(
+                'Рецепт не найден'
+            )
+        return data
+
+    def to_representation(self, instance):
+        serializer = RecipeShortSerializer(instance.recipe)
+        return serializer.data
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -242,3 +251,15 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
                 message='Вы уже добавляли это рецепт в список покупок'
             )
         ]
+
+    def validate(self, data):
+        recipe = data.get('recipe')
+        if not Recipe.objects.filter(id=recipe.id).exists():
+            raise serializers.ValidationError(
+                'Рецепт не найден'
+            )
+        return data
+
+    def to_representation(self, instance):
+        serializer = RecipeShortSerializer(instance.recipe)
+        return serializer.data

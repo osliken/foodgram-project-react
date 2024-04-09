@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from users.models import Subscribe, User
 
 from ..pagination import PageLimitPagination
-from ..permissions import AnonimOrAuthenticatedReadOnly
+from ..permissions import AdminOrReadOnly
 from ..serializers.users import (UserGETSerializer, SubscribeSerializer,
                                  SubscribeShowSerializer)
 
@@ -16,19 +16,16 @@ class CustomUserViewSet(UserViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserGETSerializer
-    permission_classes = (AnonimOrAuthenticatedReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
     pagination_class = PageLimitPagination
 
     @action(
         detail=False,
-        methods=['get', 'patch'],
+        methods=('GET', 'PATCH'),
         url_path='me',
-        url_name='me',
         permission_classes=(permissions.IsAuthenticated,)
     )
     def get_me(self, request):
-        """Позволяет пользователю получить подробную информацию о себе
-        и редактировать её."""
         if request.method == 'PATCH':
             serializer = UserGETSerializer(
                 request.user, data=request.data,
@@ -44,13 +41,11 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=True,
-        methods=['post'],
+        methods=('POST',),
         url_path='subscribe',
-        url_name='subscribe',
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscribe(self, request, id):
-        """Позволяет пользователю подписываться на автора."""
         author = get_object_or_404(User, id=id)
         serializer = SubscribeSerializer(
             data={'subscriber': request.user.id, 'author': author.id},
@@ -58,36 +53,31 @@ class CustomUserViewSet(UserViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        author_serializer = SubscribeShowSerializer(
-            author, context={'request': request}
-        )
         return Response(
-            author_serializer.data, status=status.HTTP_201_CREATED
+            serializer.data, status=status.HTTP_201_CREATED
         )
 
     @subscribe.mapping.delete
     def delete_subscribe(self, request, id):
-        """Позволяет пользователю отписываться от автора."""
         author = get_object_or_404(User, id=id)
         subscription = Subscribe.objects.filter(
             subscriber=request.user, author=author
         )
         if not subscription.exists():
             return Response(
-                'Подписка не найдена', status=status.HTTP_400_BAD_REQUEST
+                {'errors': 'Подписка не найдена'},
+                status=status.HTTP_400_BAD_REQUEST
             )
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
-        methods=['get'],
+        methods=('GET',),
         url_path='subscriptions',
-        url_name='subscriptions',
         permission_classes=(permissions.IsAuthenticated,)
     )
-    def get_subscriptions(self, request):
-        """Возвращает авторов, на которых подписан пользователь."""
+    def subscriptions(self, request):
         authors = User.objects.filter(authors__subscriber=request.user)
         paginator = PageLimitPagination()
         result_pages = paginator.paginate_queryset(

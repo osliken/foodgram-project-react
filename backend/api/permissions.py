@@ -1,23 +1,16 @@
 from rest_framework import permissions
 
 
-class AnonimOrAuthenticatedReadOnly(permissions.BasePermission):
-    """Разрешает анонимному или авторизованному пользователю
-    только безопасные запросы."""
+class AdminOrReadOnly(permissions.BasePermission):
+    """Предоставляет доступ админу, другим только для чтения."""
 
-    def has_object_permission(self, request, view, object):
-        return (
-            (request.method in permissions.SAFE_METHODS
-             and (request.user.is_anonymous
-                  or request.user.is_authenticated))
-            or request.user.is_superuser
-            or request.user.is_staff
-        )
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS
+                or request.user.is_staff)
 
 
 class AuthorOrReadOnly(permissions.BasePermission):
-    """Предоставляет доступ автору, в остальных случаях
-    доступ запрещен."""
+    """Предоставляет доступ автору, другим только для чтения."""
 
     def has_object_permission(self, request, view, object):
         return (

@@ -21,8 +21,6 @@ class UserSerializer(UserCreateSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate(self, data):
-        """Запрещает пользователям присваивать себе username me
-        и использовать повторные username и email."""
         if data.get('username') == 'me':
             raise serializers.ValidationError(
                 'Использовать имя me запрещено'
@@ -55,7 +53,6 @@ class UserGETSerializer(UserSerializer):
         )
 
     def validate(self, data):
-        """Запрещает пользователям изменять себе username на me."""
         if data.get('username') == 'me':
             raise serializers.ValidationError(
                 'Использовать имя me запрещено'
@@ -68,29 +65,6 @@ class UserGETSerializer(UserSerializer):
             request is None or not request.user.is_authenticated
             or object.authors.filter(subscriber=request.user).exists()
         )
-
-
-class SubscribeSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Subscribe."""
-
-    class Meta:
-        model = Subscribe
-        fields = ('author', 'subscriber')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Subscribe.objects.all(),
-                fields=('author', 'subscriber'),
-                message='Вы уже подписывались на этого автора'
-            )
-        ]
-
-    def validate(self, data):
-        """Проверяем, что пользователь не подписывается на самого себя."""
-        if data['subscriber'] == data['author']:
-            raise serializers.ValidationError(
-                'Подписка на cамого себя не имеет смысла'
-            )
-        return data
 
 
 class SubscribeShowSerializer(UserGETSerializer):
@@ -115,3 +89,31 @@ class SubscribeShowSerializer(UserGETSerializer):
 
     def get_recipes_count(self, object):
         return object.recipes.count()
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Subscribe."""
+
+    class Meta:
+        model = Subscribe
+        fields = ('author', 'subscriber')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Subscribe.objects.all(),
+                fields=('author', 'subscriber'),
+                message='Вы уже подписывались на этого автора'
+            )
+        ]
+
+    def validate(self, data):
+        if data['subscriber'] == data['author']:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на себя'
+            )
+        return data
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return SubscribeShowSerializer(
+            instance.author, context={'request': request}
+        ).data
