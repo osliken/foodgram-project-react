@@ -62,8 +62,8 @@ class UserGETSerializer(UserSerializer):
         """Проверка подписки пользователя на автора."""
         request = self.context.get('request')
         return (
-            request is None or not request.user.is_authenticated
-            or object.authors.filter(subscriber=request.user).exists()
+            request is not None and request.user.is_authenticated
+            and object.authors.filter(subscriber=request.user).exists()
         )
 
 
@@ -82,9 +82,12 @@ class SubscribeShowSerializer(UserGETSerializer):
         request = self.context.get('request')
         limit = request.query_params.get('recipes_limit')
         recipes = object.recipes.all()
-        if limit:
+        if limit and limit.isdigit():
             recipes = recipes[:int(limit)]
-        serializer = RecipeShortSerializer(recipes, many=True)
+        request = self.context.get('request')
+        serializer = RecipeShortSerializer(
+            recipes, many=True, context={'request': request}
+        )
         return serializer.data
 
     def get_recipes_count(self, object):

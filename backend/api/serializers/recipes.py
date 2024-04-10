@@ -1,7 +1,7 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework.validators import UniqueTogetherValidator
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from api.serializers.users import UserGETSerializer
 from recipes.constants import MAX_INGREDIENT, MIN_INGREDIENT
@@ -97,16 +97,16 @@ class RecipeGETSerializer(serializers.ModelSerializer):
         """Проверка добавления рецепта в избранное."""
         request = self.context.get('request')
         return (
-            request is None or not request.user.is_authenticated
-            or request.user.favoritings.filter(recipe=object).exists()
+            request is not None and request.user.is_authenticated
+            and request.user.favoritings.filter(recipe=object).exists()
         )
 
     def get_is_in_shopping_cart(self, object):
         """Проверка добавления рецепта в список покупок."""
         request = self.context.get('request')
         return (
-            request is None or not request.user.is_authenticated
-            or request.user.shopping_carts.filter(recipe=object).exists()
+            request is not None and request.user.is_authenticated
+            and request.user.shopping_carts.filter(recipe=object).exists()
         )
 
 
@@ -185,16 +185,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = instance
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        instance = super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
         self.add_ingredients(ingredients, recipe)
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, recipe):
-        serializer = RecipeGETSerializer(recipe)
+        request = self.context.get('request')
+        serializer = RecipeGETSerializer(recipe, context={'request': request})
         return serializer.data
 
 
@@ -234,7 +233,10 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        serializer = RecipeShortSerializer(instance.recipe)
+        request = self.context.get('request')
+        serializer = RecipeShortSerializer(
+            instance.recipe, context={'request': request}
+        )
         return serializer.data
 
 
@@ -261,5 +263,8 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        serializer = RecipeShortSerializer(instance.recipe)
+        request = self.context.get('request')
+        serializer = RecipeShortSerializer(
+            instance.recipe, context={'request': request}
+        )
         return serializer.data

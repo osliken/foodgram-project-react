@@ -3,9 +3,9 @@ from djoser.views import UserViewSet as UserView
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from api.pagination import PageLimitPagination
-from api.permissions import AdminOrReadOnly
 from api.serializers.users import (SubscribeSerializer,
                                    SubscribeShowSerializer,
                                    UserGETSerializer)
@@ -17,7 +17,7 @@ class UserViewSet(UserView):
 
     queryset = User.objects.all()
     serializer_class = UserGETSerializer
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = (AllowAny,)
     pagination_class = PageLimitPagination
 
     @action(

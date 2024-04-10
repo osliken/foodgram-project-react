@@ -1,11 +1,11 @@
 from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from users.models import User
 
 from recipes.constants import (LENGTH_TEXT, MAX_COOKING_TIME, MAX_INGREDIENT,
                                MAX_LENGTH, MAX_LENGTH_COLOR, MIN_COOKING_TIME,
                                MIN_INGREDIENT)
+from users.models import User
 
 
 class Tag(models.Model):
@@ -176,6 +176,7 @@ class IngredientRecipe(models.Model):
     class Meta:
         verbose_name = 'Соответствие рецепта и ингредиента'
         verbose_name_plural = 'Соответствие рецептов и ингредиентов'
+        ordering = ('ingredient',)
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
@@ -208,6 +209,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        ordering = ('user',)
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
