@@ -48,20 +48,10 @@
     DEBUG=<True/False>
     ALLOWED_HOSTS=<localhost foodgram.ru>
     ```
-- Перейдите в директорию infra:
-    
-    ```bash
-    cd infra
-    ```
-- Выполните команду для доступа к документации
-
-    ```bash
-    docker-compose up
-    ```
 
 ## Документация к API доступна по адресу:
 
-[http://localhost/api/docs/](http://localhost/api/docs/)
+[https://osliken.ru/api/docs/](https://osliken.ru/api/docs/)
 
 
 ## Как развернуть проект на удалённом сервере:

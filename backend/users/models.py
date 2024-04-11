@@ -2,7 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-from recipes.constants import LENGTH_TEXT, MAX_LENGTH_EMAIL
+from recipes.constants import (
+    LENGTH_TEXT, MAX_LENGTH_USER, MAX_LENGTH_USER_EMAIL
+)
 from users.validators import validate_username
 
 
@@ -19,14 +21,14 @@ class User(AbstractUser):
 
     email = models.EmailField(
         'Email',
-        max_length=MAX_LENGTH_EMAIL,
+        max_length=MAX_LENGTH_USER_EMAIL,
         unique=True,
         help_text='Введите адрес электронной почты',
         db_index=True
     )
     username = models.CharField(
         'Имя пользователя',
-        max_length=150,
+        max_length=MAX_LENGTH_USER,
         unique=True,
         help_text='Введите имя пользователя',
         db_index=True,
@@ -40,24 +42,24 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         'Имя',
-        max_length=150,
+        max_length=MAX_LENGTH_USER,
         help_text='Введите ваше имя'
     )
     last_name = models.CharField(
         'Фамилия',
-        max_length=150,
+        max_length=MAX_LENGTH_USER,
         help_text='Введите вашу фамилию'
     )
     password = models.CharField(
         'Пароль',
-        max_length=150,
+        max_length=MAX_LENGTH_USER,
         help_text='Введите пароль'
     )
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ('id',)
+        ordering = ('username',)
         constraints = [
             models.CheckConstraint(
                 check=~models.Q(username='me'),
@@ -90,7 +92,7 @@ class Subscribe(models.Model):
     class Meta:
         verbose_name = 'Подписка на автора'
         verbose_name_plural = 'Подписки на автора'
-        ordering = ('id',)
+        ordering = ('author',)
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'subscriber'],
